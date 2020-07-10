@@ -1,0 +1,37 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    postgres:
+      image: postgres:11.1-alpine
+      container_name: sistema-chamados-postgres
+      working_dir: /application
+      volumes:
+        - ./infra:/application
+      environment:
+        - POSTGRES_USER=chamados
+        - POSTGRES_PASSWORD=chamados
+        - POSTGRES_DB=chamados_db
+      ports:
+        - "8892:5432"
+
+    webserver:
+      image: nginx:alpine
+      container_name: sistema-chamados-webserver
+      working_dir: /application
+      volumes:
+          - ./api:/application
+          - ./devops/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "8888:80"
+
+    php-fpm:
+      build: devops/php-fpm
+      container_name: sistema-chamados-php-fpm
+      working_dir: /application
+      volumes:
+        - ./api:/application
+        - ./devops/php-fpm/php-ini-overrides.ini:/etc/php/7.4/fpm/conf.d/99-overrides.ini
+
